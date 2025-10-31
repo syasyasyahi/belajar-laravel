@@ -1,0 +1,25 @@
+<?php
+
+use App\Http\Controllers\CalculatorController;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', [\App\Http\Controllers\LoginController::class, 'index']);
+Route::get('login', [\App\Http\Controllers\LoginController::class, 'index'])->name('login');
+Route::post('action-login', [\App\Http\Controllers\LoginController::class, 'actionLogin'])->name('action-login');
+Route::middleware(['auth'])->group(function(){
+    Route::resource('dashboard', \App\Http\Controllers\DashboardController::class);
+    Route::get('logout', [\App\Http\Controllers\LoginController::class, 'logout'])->name('logout');
+});
+
+Route::get('belajar', [\App\Http\Controllers\BelajarController::class, 'index']);
+Route::get('belajar/tambah', [\App\Http\Controllers\BelajarController::class, 'tambah'])->name('belajar.tambah');
+Route::post('storeTambah', [\App\Http\Controllers\BelajarController::class, 'storeTambah'])->name('storeTambah');
+Route::get('belajar/kurang', [\App\Http\Controllers\BelajarController::class, 'kurang'])->name('belajar.kurang');
+Route::post('storeKurang', [\App\Http\Controllers\BelajarController::class, 'storeKurang'])->name('storeKurang');
+Route::get('calculator', [CalculatorController::class,'create']);
+Route::post('calculator/create', [CalculatorController::class, 'store'])->name('calculator.store');
+
+// get: preview/menampilkan
+// post: mengirim data dari form
+// put: mengirim dati dari form dengan update
+// delete: mengirim data dari form dengan action hapus terlebih dahulu

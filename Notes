@@ -1,0 +1,10 @@
+MVC : model views controller
+
+model = logika ke dalam database dan table
+views = urusan ui/ux ada di dalam views
+controller = mengarahkan sesuai keinginan programmer
+
+ROUTES : mengatur bagaimana ketika browser mengakses laman
+COMPOSER : untuk menginstall package or library in PHP
+ARTISANS : fitur yang ada di laravel
+SPARK : fitur yang ada di CI4
