@@ -20,7 +20,7 @@
                     <a href="{{ route('user.edit', $user->id) }}" class="btn btn-warning btn-sm">Edit</a>
                     <form action="{{ route('user.destroy', $user->id) }}" method="post" onsubmit="return confirm('Are you sure you want to delete?')" class="d-inline">
                         @csrf
-                        @method('DELETE') <button type="submit" class="btn-danger btn-sm">Delete</button>
+                        @method('DELETE') <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                     </form>
                 </td>
             </tr>
