@@ -14,4 +14,9 @@ class product extends Model
         'product_description',
         'is_active'
     ];
+    // one to many : belongsTo
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id', 'id');
+    }
 }
