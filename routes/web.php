@@ -22,6 +22,9 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('product', \App\Http\Controllers\ProductController::class);
     Route::resource('profile', \App\Http\Controllers\ProfileController::class);
     Route::post('change-password', [\App\Http\Controllers\ProfileController::class, 'changePassword'])->name('profile.change-password');
+    Route::post('change-profile', [\App\Http\Controllers\ProfileController::class, 'changeProfile'])->name('profile.change-profile');
+    Route::resource('order', \App\Http\Controllers\OrderController::class);
+    Route::get('order/get-products', [\App\Http\Controllers\ProductController::class, 'getProducts'])->name('order.get-products');
 });
 
 Route::get('belajar', [\App\Http\Controllers\BelajarController::class, 'index']);

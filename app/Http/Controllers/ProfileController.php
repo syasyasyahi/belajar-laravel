@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\UserDetail;
 use Auth;
+use File;
 use Hash;
 use Illuminate\Http\Request;
+use PhpParser\Node\Stmt\TryCatch;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class ProfileController extends Controller
@@ -17,7 +20,8 @@ class ProfileController extends Controller
     {
         $title = "Profile";
         $user = Auth::user();
-        return view('profile.index', compact('title', 'user'));
+        $userDetail = Auth::user()->userDetail;
+        return view('profile.index', compact('title', 'user', 'userDetail'));
     }
 
     public function changePassword(Request $request)
@@ -30,7 +34,7 @@ class ProfileController extends Controller
         $user = Auth::user();
         // if the old password is different from what the user fill in
 
-        if(!Hash::check($request->old_password, $user->password)){
+        if (!Hash::check($request->old_password, $user->password)) {
             alert()->error('Failed', 'The old password is wrong!');
             return back();
         }
@@ -40,6 +44,48 @@ class ProfileController extends Controller
 
         alert()->success('Success', 'Your password has been successfully changed');
         return back();
+    }
+
+    public function changeProfile(Request $request)
+    {
+        $user = Auth::user();
+        $photoPath = "";
+
+        if($request->hasFile('photo')){
+            $photo = $request->file('photo');
+
+            if($user->userDetail && $user->userDetail->photo){
+                File::delete(public_path('storage/' . $user->userDetail->photo));
+            }
+            $photoPath = $photo->store('profiles', 'public'); //storage/app/public/profiles
+        }
+        //upsert=jika datanya belum ada maka insert, selain update
+        try {
+            //code...
+            UserDetail::upsert(
+                [
+                    //insert
+                    [
+                        'user_id' => $user->id,
+                        'photo'=> $photoPath ?? ($user->userDetail->photo ?? ''),
+                        'about' => $request->about,
+                        'company' => $request->company,
+                        'job' => $request->job,
+                        'address' => $request->address,
+                        'phone' => $request->phone,
+                    ]
+                ],
+                //edit
+                ['user_id'],
+                ['photo', 'about', 'company', 'job', 'address', 'phone']
+
+            );
+            alert()->success('Success', 'Your profile has been successfully edited!');
+            return redirect()->to('profile');
+        } catch (\Throwable $th) {
+            alert()->error('Error', $th->getMessage());
+            return redirect()->to('profile');
+        }
     }
 
     /**

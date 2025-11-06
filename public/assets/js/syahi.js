@@ -72,7 +72,7 @@ console.log("ini button", btn);
 let buttons = document.querySelectorAll(".category-btn");
 // buttons.forEach(function (btn) {})
 buttons.forEach((btn) => {
-  btn.style.color = "red";
+  btn.style.color = "blue";
   console.log(btn);
 });
 
@@ -89,6 +89,8 @@ card.appendChild(h3);
 card.appendChild(p);
 
 let currentCategory = "all";
+let products = [];
+
 function filterCategory(category, event) {
   currentCategory = category;
   let buttons = document.querySelectorAll(".category-btn");
@@ -105,9 +107,12 @@ function filterCategory(category, event) {
   renderProducts();
 }
 
-function renderProducts(searchProduct = "") {
+async function renderProducts(searchProduct = "") {
   const productGrid = document.getElementById("productGrid");
   productGrid.innerHTML = "";
+
+const response = await fetch("/order/get-products");
+products = await response.json();
 
   //filter
   const filtered = products.filter((p) => {
