@@ -9,6 +9,7 @@
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ asset('assets/css/syahi.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
 <body>
@@ -39,7 +40,7 @@
                     <div class="cart-header">
                         <h4>Basket</h4>
                         <!-- ORD-date-001 -->
-                        <small>Order # <span class="orderNumber">{{ $order_code ?? '' }};</span></small>
+                        <small>Order # <span class="orderNumber">{{ $order_code ?? '' }}</span></small>
                     </div>
                     <div class="cart-items" id="cartItems">
                         <div class="text-center text-muted mt-5">

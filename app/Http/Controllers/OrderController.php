@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\order;
+use App\Models\orders_detail;
 use App\Models\product;
+use DB;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -30,11 +32,11 @@ class OrderController extends Controller
         //select max from orders
         $lastTransaction = order::whereDate('created_at', now()->toDateString())->orderBy('id', 'desc')->first();
         $lastNumber = 0;
-        if($lastTransaction){
+        if ($lastTransaction) {
             $lastNumber = (int) substr($lastTransaction->order_code, -4);
         }
         $runningNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
-        $order_code = $prefix ."-". $date."-" . $runningNumber;
+        $order_code = $prefix . "-" . $date . "-" . $runningNumber;
         return view('order.create', compact('categories', 'order_code'));
     }
     public function getProducts()
@@ -56,7 +58,36 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            DB::beginTransaction();
+            $order = Order::create([
+                'order_code' => $request->order_code,
+                'order_amount' => $request->subTotal,
+                'order_status' => 1,
+                'order_subtotal' => $request->GrandTotal
+            ]);
+
+            foreach ($request->cart as $item) {
+                orders_detail::insert([
+                    'order_id' => $order->id,
+                    'product_id' => $item['id'],
+                    'qty' => $item['quantity'],
+                    'order_price' => $item['product_price'],
+                ]);
+            }
+
+            DB::commit();
+            return response()->json([
+                'status' => 'success',
+                'order_code' => $request->order_code
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage(),
+            ], 500);
+        }
     }
 
     /**

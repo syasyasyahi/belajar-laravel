@@ -117,7 +117,7 @@ products = await response.json();
   //filter
   const filtered = products.filter((p) => {
     // shorthand / ternery
-    const matchCategory = currentCategory === "all" || p.category_name === currentCategory;
+    const matchCategory = currentCategory === "all" || p.category.category_name === currentCategory;
     const matchSearch = p.product_name.toLowerCase().includes(searchProduct);
     return matchCategory && matchSearch;
   });
@@ -131,7 +131,7 @@ products = await response.json();
             <img src="/storage/${product.product_photo}" alt="" width="100%">
         </div>
         <div class="card-body">
-            <span class="badge bg-secondary badge category">${product.category_name}</span>
+            <span class="badge bg-secondary badge category">${product.category.category_name}</span>
             <h6 class="card-title mt-2 mb-2">${product.product_name}</h6>
             <p class="card-text text-primary fw-bold">Rp.${product.product_price}</p>
         </div>
@@ -173,8 +173,9 @@ function renderCart() {
     div.className = "cart-item d-flex justify-content-between align-items-center mb-2";
     div.innerHTML = `
                 <div>
-                    <strong>${item.product_name}</strong>
-                    <small>${item.product_price}</small>
+                <img src='/storage/${item.product_photo}' alt='tess' width='80'>
+                    <strong clas='mb-1'>${item.product_name}</strong>
+                    <small class='text-muted'>Rp. ${item.product_price.toLocaleString('id-ID')}</small>
                 </div>
                 <div class="d-flex align-items-center">
                     <button class="btn btn-outline-secondary me-2" onclick="changeQty(${item.id}, -1)">-</button>
@@ -241,15 +242,18 @@ async function processPayment() {
   const tax = document.querySelector("#tax_value").value.trim();
   const grandTotal = document.querySelector("#total_value").value.trim();
   try {
-    const res = await fetch("add-pos.php?payment", {
+    const res = await fetch("/order", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+         "Content-Type": "application/json",
+         "X-CSRF-TOKEN" : document.querySelector('meta[name="csrf-token"]').content
+        },
       body: JSON.stringify({ cart, order_code, subtotal, tax, grandTotal }),
     });
     const data = await res.json();
-    if (data.status == "Success") {
+    if (data.status == "success") {
       alert("Transaction Success");
-      window.location.href = "print.php";
+      window.location.href = "order";
     } else {
       alert("Transaction Failed", data.message);
     }
